@@ -1,0 +1,10 @@
+machine:
+    node:
+        version: 6.1.0
+    pre:
+        - "mkdir -p /home/ubuntu/laravel-like-router/test/app/ctrl"
+        - "echo 'module.exports.index = function () { return true; }' > /home/ubuntu/laravel-like-router/test/app/ctrl/top.js"
+
+dependencies:
+    pre:
+        - npm install github:yamayamasan/auto-requires
