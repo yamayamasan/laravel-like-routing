@@ -1,7 +1,7 @@
 'use strict';
 
 const _ar = require('auto-requires');
-const LLRouter = require('../../laravel-like-router')({
+const routing = require('../../laravel-like-routing')({
   loader: _ar({
     root: __dirname,
     path: 'ctrl',
@@ -11,13 +11,13 @@ const LLRouter = require('../../laravel-like-router')({
 const before = require('./before');
 
 // http://domain/
-LLRouter.get('', function *() {
+routing.get('', function *() {
   this.body = 'hello, this is index page';
 });
 
-LLRouter.group('user', {'before': before}, () => {
+routing.group('user', {'before': before}, () => {
 // http://domain/user/:id
-  LLRouter.get(':id', 'user.index');
+  routing.get(':id', 'user.index');
 });
 
-module.exports = LLRouter.getRules();
+module.exports = routing.getRules();

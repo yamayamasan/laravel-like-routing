@@ -1,6 +1,6 @@
 'use strict';
 
-const LLRouter = require('../laravel-like-router')();
+const routing = require('../laravel-like-routing')();
 const _ar = require('auto-requires');
 const expect = require('chai').expect;
 
@@ -17,26 +17,26 @@ const urls = {
 describe("Tst laravel-like-router", () => {
 
   beforeEach((done) => {
-    LLRouter.clearRule();
+    routing.clearRule();
     done();
   });
 
   it ('test:', () => {
     // GET /top
-    LLRouter.get('top', () => {});
+    routing.get('top', () => {});
 
-    LLRouter.group('user', () => {
+    routing.group('user', () => {
       // GET /user/:id
-      LLRouter.get(':id', () => {});
+      routing.get(':id', () => {});
       // POST /user/
-      LLRouter.post('', () => {});
+      routing.post('', () => {});
       // PUT /user/:id
-      LLRouter.put(':id', () => {});
+      routing.put(':id', () => {});
       // DELETE /user/:id
-      LLRouter.del(':id', () => {});
+      routing.del(':id', () => {});
     });
 
-    const rules = LLRouter.getRules();
+    const rules = routing.getRules();
     expect(rules[0]).to.have.deep.property('path').and.equal('/top');
     expect(rules[0]).to.have.deep.property('method').and.equal('get');
     expect(rules[3]).to.have.deep.property('path').and.equal('/user/:id');
@@ -44,7 +44,7 @@ describe("Tst laravel-like-router", () => {
   });
 
   it ('use auto-requires:', () => {
-    const LLRouter_ar = require('../laravel-like-router')({
+    const routing_ar = require('../laravel-like-routing')({
       loader: _ar({
         root: `${__dirname}/app`,
         path: ['ctrl'],
@@ -52,11 +52,11 @@ describe("Tst laravel-like-router", () => {
       }),
     });
 
-    LLRouter_ar.get('top', 'top.index');
+    routing_ar.get('top', 'top.index');
 
-    LLRouter_ar.get('admin', 'admin.index.index');
+    routing_ar.get('admin', 'admin.index.index');
 
-    const rules = LLRouter_ar.getRules();
+    const rules = routing_ar.getRules();
     expect(rules[0]).to.have.deep.property('path').and.equal('/top');
     expect(rules[0]).to.have.deep.property('method').and.equal('get');
     expect(rules[1]).to.have.deep.property('path').and.equal('/admin');
@@ -64,19 +64,19 @@ describe("Tst laravel-like-router", () => {
   });
 
   it ('use before action:', () => {
-    LLRouter.get('after/auth', {'before': () => {}}, ()=>{});
+    routing.get('after/auth', {'before': () => {}}, ()=>{});
 
-    LLRouter.group('user', {'before': () =>{}},() => {
+    routing.group('user', {'before': () =>{}},() => {
       // GET /user/:id
-      LLRouter.get(':id', () => {});
+      routing.get(':id', () => {});
       // POST /user/
-      LLRouter.post('', () => {});
+      routing.post('', () => {});
       // PUT /user/:id
-      LLRouter.put(':id', () => {});
+      routing.put(':id', () => {});
       // DELETE /user/:id
-      LLRouter.del(':id', () => {});
+      routing.del(':id', () => {});
     });
-    const rules = LLRouter.getRules();
+    const rules = routing.getRules();
     rules.forEach((v) => {
       expect(v).to.have.deep.property('before').that.is.an('function');
     });
