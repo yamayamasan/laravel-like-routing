@@ -4,30 +4,30 @@ for node.js verison over 4.2.0
 
 # Installation
 ```sh
-npm install yamayamasan/laravel-like-router
+npm install yamayamasan/laravel-like-routing
 ```
 
 # Usage
 
 ```js:sample
-const LLRouter = require('laravel-like-router')();
+const routing = require('laravel-like-router')();
 
-LLRouter.get('top', () => {});
+routing.get('top', () => {});
 
-LLRouter.get('after/auth', { 'before': () => {} }, () => {});
+routing.get('after/auth', { 'before': () => {} }, () => {});
 
-LLRouter.group('user', { 'before': () => {} }, () => {
+routing.group('user', { 'before': () => {} }, () => {
   // GET /user/:id
-  LLRouter.get(':id', () => {});
+  routing.get(':id', () => {});
   // POST /user/
-  LLRouter.post('', { 'before': null },() => {});
+  routing.post('', { 'before': null },() => {});
   // PUT /user/:id
-  LLRouter.put(':id', () => {});
+  routing.put(':id', () => {});
   // DELETE /user/:id
-  LLRouter.del(':id', () => {});
+  routing.del(':id', () => {});
 });
 
-const rules = LLRouter.getRules();
+const rules = routing.getRules();
 // => [
 //  { path: '/top', ctrl: [Function], method: 'get', before: '' },
 //  { path: '/after/auth', ctrl: [Function], method: 'get', before: [Function] },
@@ -46,7 +46,7 @@ npm install yamayamasan/auto-requires
 
 ```js:sample
 const _ar = require('auto-requires');
-const LLRouter = require('laravel-like-router')({
+const routing = require('laravel-like-router')({
   loader: _ar({
     root: `${__dirname}/app`,
     path: 'ctrl',
@@ -55,9 +55,9 @@ const LLRouter = require('laravel-like-router')({
 });
 
 // top.index => __dirname/app/ctrl/top.js: Function: index
-LLRouter.get('top', 'top.index');
+routing.get('top', 'top.index');
 
-const rules = LLRouter.getRules();
+const rules = routing.getRules();
 // => [ { path: '/top', ctrl: [Function], method: 'get', before: '' } ]
 ```
 # Example for koa
