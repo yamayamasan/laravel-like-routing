@@ -46,7 +46,7 @@ npm install yamayamasan/auto-requires
 
 ```js:sample
 const _ar = require('auto-requires');
-const routing = require('laravel-like-router')({
+const routing = require('laravel-like-routing')({
   loader: _ar({
     root: `${__dirname}/app`,
     path: 'ctrl',
