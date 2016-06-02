@@ -10,7 +10,7 @@ npm install yamayamasan/laravel-like-routing
 # Usage
 
 ```js:sample
-const routing = require('laravel-like-router')();
+const routing = require('laravel-like-routing')();
 
 routing.get('top', () => {});
 
