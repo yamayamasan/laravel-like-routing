@@ -13,10 +13,6 @@ class LLRouting {
       loader: null,
       loaderkey: null,
     };
-    this.get = null;
-    this.post = null;
-    this.put = null;
-    this.del = null;
     this.run(options);
   }
 
@@ -84,7 +80,9 @@ class LLRouting {
     const r = {};
     if (args.length < 1) return r;
     args.forEach((v) => {
-      if (_.isFunction(v)) {
+      if (_.isString(v)) {
+        r.callback = v;
+      } else if (_.isFunction(v)) {
         r.callback = v;
       } else if (_.isObject(v)) {
         r.opt = v;
