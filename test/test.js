@@ -1,16 +1,16 @@
-'use strict';
-
-const routing = require('../laravel-like-routing')();
+const LLrouting = require('../laravel-like-routing');
 const _ar = require('auto-requires');
 const expect = require('chai').expect;
 
+const routing = new LLrouting();
+
 const urls = {
-    user: [
-      {path: '/user/:id', method: 'put'},
-      {path: '/user/:id', method: 'post'},
-      {path: '/user/:id', method: 'put'},
-      {path: '/user/:id', method: 'del'},
-    ]
+  user: [
+    { path: '/user/:id', method: 'put' },
+    { path: '/user/:id', method: 'post' },
+    { path: '/user/:id', method: 'put' },
+    { path: '/user/:id', method: 'del' },
+  ],
 };
 
 
@@ -44,7 +44,9 @@ describe("Tst laravel-like-router", () => {
   });
 
   it ('use auto-requires:', () => {
-    const routing_ar = require('../laravel-like-routing')({
+    const LLrouting_ar = require('../laravel-like-routing');
+
+    const routing_ar = new LLrouting_ar({
       loader: _ar({
         root: `${__dirname}/app`,
         path: ['ctrl'],
@@ -64,7 +66,7 @@ describe("Tst laravel-like-router", () => {
   });
 
   it ('use before action:', () => {
-    routing.get('after/auth', {'before': () => {}}, ()=>{});
+    routing.get('after/auth', {'before': () => {}, 'after': () => {}}, ()=>{});
 
     routing.group('user', {'before': () =>{}},() => {
       // GET /user/:id
@@ -77,8 +79,13 @@ describe("Tst laravel-like-router", () => {
       routing.del(':id', () => {});
     });
     const rules = routing.getRules();
-    rules.forEach((v) => {
+    rules.forEach((v, idx) => {
+      if (idx === 0) {
+        expect(v).to.have.deep.property('after').that.is.an('function');
+      }
       expect(v).to.have.deep.property('before').that.is.an('function');
     });
   });
+
+  
 });

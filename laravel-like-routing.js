@@ -1,92 +1,101 @@
-'use strict';
-
 const util = require('util');
 const _ = require('lodash');
 
-const LLRouting = function (options) {
-  if (!(this instanceof LLRouting)) {
-    return new LLRouting(options);
+class LLRouting {
+
+  constructor(options) {
+    this.parent = '';
+    this.before = '';
+    this.after = '';
+    this.rules = [];
+    this.methods = ['get', 'post', 'put', 'del'];
+    this.options = {
+      loader: null,
+      loaderkey: null,
+    };
+    this.get = null;
+    this.post = null;
+    this.put = null;
+    this.del = null;
+    this.run(options);
   }
 
-  this.parent = '';
-  this.before = '';
-  this.rules  = [];
-  this.methods = ['get', 'post', 'put', 'del'];
-  this.options = {
-    loader: null,
-    loaderkey: null
-  };
-
-  if (options) Object.assign(this.options, options);
-
-  if (this.options.loader && !this.options.loaderkey)
+  run(options) {
+    if (options) Object.assign(this.options, options);
+    if (this.options.loader && !this.options.loaderkey) {
       this.options.loaderkey = Object.keys(this.options.loader)[0];
+    }
+    this.methods.forEach((method) => {
+      this[method] = (orgpath, ...args) => {
+        const variable = LLRouting.getVariableArgs(args);
+        let before = this.before;
+        let ctrl = variable.callback;
+        let after = this.after;
+        if (variable.opt) {
+          before = variable.opt.before || null;
+          after = variable.opt.after || null;
+        }
 
-  this.methods.forEach((method) => {
-    this[method] = (path, ...args) => {
-      const variable = getVariableArgs(args);
-      let before = this.before;
-      let ctrl = variable.callback;
-      if (variable.opt) before = variable.opt.before || null;
+        if (this.options.loader && util.isString(ctrl)) {
+          ctrl = _.get(this.options.loader[this.options.loaderkey], ctrl);
+        }
+        const path = `${this.parent}/${LLRouting.trim(orgpath)}`;
+        const set = { path, ctrl, method, before, after };
+        this.rules.push(set);
+      };
+    });
+  }
 
-      if (this.options.loader && util.isString(ctrl)) {
-        ctrl = _.get(this.options.loader[this.options.loaderkey], ctrl);
-      }
+  group(path, ...args) {
+    const variable = LLRouting.getVariableArgs(args);
 
-      path = `${this.parent}/${trim(path)}`;
-      const set = {path, ctrl, method, before};
-      this.rules.push(set);
-    };
-  });
-};
+    if (variable.opt) this.before = variable.opt.before || null;
 
-LLRouting.prototype.group = function (path, ...args) {
-  const variable = getVariableArgs(args);
+    if (!this.parent) this.parent = '';
+    this.parent += `/${LLRouting.trim(path)}`;
+    variable.callback();
+    this.parent = '';
+    this.before = null;
+  }
 
-  if (variable.opt) this.before = variable.opt.before || null;
+  match(methods, path, ctrl) {
+    if (!util.isArray(methods)) throw new Error('methods arg is only array');
 
-  if (!this.parent) this.parent = '';
-  this.parent += `/${trim(path)}`;
-  variable.callback();
-  this.parent = '';
-  this.before = null;
-};
+    methods.forEach((v) => {
+      this[v](path, ctrl);
+    });
+  }
 
-LLRouting.prototype.match = function (methods, path, ctrl) {
-  if (!util.isArray(methods)) throw new Error("methods arg is only array");
+  any(path, ctrl) {
+    this.methods.forEach((method) => {
+      this[method](path, ctrl);
+    });
+  }
 
-  methods.forEach((v) => {
-    this[v](path, ctrl);
-  });
-};
+  getRules() {
+    return this.rules;
+  }
 
-LLRouting.prototype.any = function (path, ctrl){
-  this.methods.forEach((method) => {
-    this[method](path, ctrl);
-  });
-};
+  clearRule() {
+    this.rules = [];
+  }
 
-LLRouting.prototype.getRules = function () {
-  return this.rules;
-};
-
-LLRouting.prototype.clearRule = function () {
-  this.rules = [];
-};
-
-function trim(path) {
-  return path.replace(/^\/+|\/+$/g, '');
-}
-
-function getVariableArgs(args) {
+  static getVariableArgs(args) {
     const r = {};
     if (args.length < 1) return r;
     args.forEach((v) => {
-      if (!util.isObject(v)) r.callback = v;
-      if (util.isObject(v)) r.opt = v;
+      if (_.isFunction(v)) {
+        r.callback = v;
+      } else if (_.isObject(v)) {
+        r.opt = v;
+      }
     });
-
     return r;
+  }
+
+  static trim(path) {
+    return path.replace(/^\/+|\/+$/g, '');
+  }
 }
 
 module.exports = LLRouting;
