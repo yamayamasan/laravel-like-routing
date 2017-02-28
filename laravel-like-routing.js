@@ -6,12 +6,17 @@ class LLRouting {
   constructor(options) {
     this.parent = '';
     this.before = '';
+    this.after = '';
     this.rules = [];
     this.methods = ['get', 'post', 'put', 'del'];
     this.options = {
       loader: null,
       loaderkey: null,
     };
+    this.get = null;
+    this.post = null;
+    this.put = null;
+    this.del = null;
     this.run(options);
   }
 
@@ -25,12 +30,17 @@ class LLRouting {
         const variable = LLRouting.getVariableArgs(args);
         let before = this.before;
         let ctrl = variable.callback;
-        if (variable.opt) before = variable.opt.before || null;
+        let after = this.after;
+        if (variable.opt) {
+          before = variable.opt.before || null;
+          after = variable.opt.after || null;
+        }
+
         if (this.options.loader && util.isString(ctrl)) {
           ctrl = _.get(this.options.loader[this.options.loaderkey], ctrl);
         }
         const path = `${this.parent}/${LLRouting.trim(orgpath)}`;
-        const set = { path, ctrl, method, before };
+        const set = { path, ctrl, method, before, after };
         this.rules.push(set);
       };
     });
@@ -74,8 +84,11 @@ class LLRouting {
     const r = {};
     if (args.length < 1) return r;
     args.forEach((v) => {
-      if (!util.isObject(v)) r.callback = v;
-      if (util.isObject(v)) r.opt = v;
+      if (_.isFunction(v)) {
+        r.callback = v;
+      } else if (_.isObject(v)) {
+        r.opt = v;
+      }
     });
     return r;
   }

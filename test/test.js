@@ -66,7 +66,7 @@ describe("Tst laravel-like-router", () => {
   });
 
   it ('use before action:', () => {
-    routing.get('after/auth', {'before': () => {}}, ()=>{});
+    routing.get('after/auth', {'before': () => {}, 'after': () => {}}, ()=>{});
 
     routing.group('user', {'before': () =>{}},() => {
       // GET /user/:id
@@ -79,8 +79,13 @@ describe("Tst laravel-like-router", () => {
       routing.del(':id', () => {});
     });
     const rules = routing.getRules();
-    rules.forEach((v) => {
+    rules.forEach((v, idx) => {
+      if (idx === 0) {
+        expect(v).to.have.deep.property('after').that.is.an('function');
+      }
       expect(v).to.have.deep.property('before').that.is.an('function');
     });
   });
+
+  
 });
