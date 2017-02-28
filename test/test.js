@@ -86,6 +86,4 @@ describe("Tst laravel-like-router", () => {
       expect(v).to.have.deep.property('before').that.is.an('function');
     });
   });
-
-  
 });

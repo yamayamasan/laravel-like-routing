@@ -1,6 +1,6 @@
 {
   "name": "laravel-like-routing",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "define routing to like Laravel(php framework)",
   "main": "laravel-like-routing.js",
   "scripts": {
