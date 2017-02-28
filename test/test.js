@@ -1,16 +1,16 @@
-'use strict';
-
-const routing = require('../laravel-like-routing')();
+const LLrouting = require('../laravel-like-routing');
 const _ar = require('auto-requires');
 const expect = require('chai').expect;
 
+const routing = new LLrouting();
+
 const urls = {
-    user: [
-      {path: '/user/:id', method: 'put'},
-      {path: '/user/:id', method: 'post'},
-      {path: '/user/:id', method: 'put'},
-      {path: '/user/:id', method: 'del'},
-    ]
+  user: [
+    { path: '/user/:id', method: 'put' },
+    { path: '/user/:id', method: 'post' },
+    { path: '/user/:id', method: 'put' },
+    { path: '/user/:id', method: 'del' },
+  ],
 };
 
 
@@ -44,7 +44,9 @@ describe("Tst laravel-like-router", () => {
   });
 
   it ('use auto-requires:', () => {
-    const routing_ar = require('../laravel-like-routing')({
+    const LLrouting_ar = require('../laravel-like-routing');
+
+    const routing_ar = new LLrouting_ar({
       loader: _ar({
         root: `${__dirname}/app`,
         path: ['ctrl'],
